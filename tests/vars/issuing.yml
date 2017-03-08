@@ -1,0 +1,9 @@
+---
+letsencrypt_certs_to_generate:
+  - domain: 'danvaida.com'
+    key_size: 4096
+    account_email: 'me@danvaida.com'
+    account_key: "{{ letsencrypt_certs_dir }}/{{ letsencrypt_account_key_name }}.key"
+    challenge: 'dns-01'
+    csr: "{{ letsencrypt_certs_dir }}/danvaida.com/your.csr"
+    dest: "{{ letsencrypt_certs_dir }}/danvaida.com/domain.crt"

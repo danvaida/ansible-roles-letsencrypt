@@ -1,0 +1,4 @@
+---
+- name: route53
+  src: https://github.com/danvaida/ansible-roles-route53.git
+  scm: git

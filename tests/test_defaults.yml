@@ -1,0 +1,11 @@
+---
+- name: Testing the idempotence with the default vars
+  hosts: localhost
+  pre_tasks:
+    - debug:
+        msg: >
+          Running the playbook in dry-run mode.
+      when: ansible_check_mode
+
+  roles:
+    - letsencrypt

@@ -1,0 +1,5 @@
+---
+letsencrypt_certs_dir:         '/opt/letsencrypt/workdir'
+letsencrypt_account_key_name:  'account'
+letsencrypt_account_key_size:  4096
+letsencrypt_certs_to_generate: []

@@ -1,0 +1,104 @@
+---
+- name: Certificates work dir should be created
+  file:
+    path: "{{ letsencrypt_certs_dir }}"
+    state: directory
+  register: _letsencrypt_certs_dir
+  tags: letsencrypt
+
+- name: Intermediate cert should be obtained
+  get_url:
+    url: 'https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem'
+    dest: "{{ letsencrypt_certs_dir }}"
+  tags: letsencrypt
+
+- name: Certificates repository (dir) structure should be created
+  file:
+    path: "{{ letsencrypt_certs_dir }}/{{ item.domain }}"
+    state: directory
+  with_items: "{{ letsencrypt_certs_to_generate }}"
+  tags: letsencrypt
+
+- name: Account key should be created
+  command: >
+    openssl genrsa -out
+    {{ letsencrypt_certs_dir }}/{{ letsencrypt_account_key_name }}.key
+    {{ letsencrypt_account_key_size }}
+  args:
+    creates: "{{ letsencrypt_certs_dir }}/{{ letsencrypt_account_key_name }}.key"
+  tags: letsencrypt
+
+- name: Certificate(s) key(s) should be created
+  command: >
+    openssl genrsa -out
+    {{ letsencrypt_certs_dir }}/{{ item.domain }}/private.key {{ item.key_size }}
+  args:
+    creates: "{{ letsencrypt_certs_dir }}/{{ item.domain }}/private.key"
+  with_items: "{{ letsencrypt_certs_to_generate }}"
+  register: _letsencrypt_domains_private_keys
+  tags: letsencrypt
+
+- name: CSR(s) should be generated
+  command: openssl req -new -sha256
+    -key {{ letsencrypt_certs_dir }}/{{ item.item.domain }}/private.key
+    -out {{ letsencrypt_certs_dir }}/{{ item.item.domain }}/your.csr
+    -subj /CN={{ item.item.domain }}
+  when: item.changed
+  with_items: "{{ _letsencrypt_domains_private_keys.results }}"
+  tags: letsencrypt
+
+- name: Existence check of the cert file should be made
+  stat:
+    path: "{{ item.dest }}"
+  with_items: "{{ letsencrypt_certs_to_generate }}"
+  register: _letsencrypt_certs_check
+  tags: letsencrypt
+
+- name: List of certs to be obtained should be set as fact
+  set_fact:
+    letsencrypt_certs_to_obtain: "{{ letsencrypt_certs_to_obtain | default([]) + [ item.item ] }}"
+  with_items: "{{ _letsencrypt_certs_check.results }}"
+  when:
+    - not item.stat.exists
+    - letsencrypt_acme_step == 'one'
+  tags: letsencrypt
+
+- name: ACME step one
+  letsencrypt:
+    account_email: "{{ item.account_email }}"
+    account_key: "{{ letsencrypt_certs_dir }}/{{ letsencrypt_account_key_name }}.key"
+    acme_directory: "{{ item.acme_directory | default(omit) }}"
+    agreement: "{{ item.agreement | default(omit) }}"
+    challenge: "{{ item.challenge }}"
+    csr: "{{ item.csr }}"
+    dest: "{{ item.dest }}"
+    remaining_days: "{{ item.remaining_days | default(omit) }}"
+  with_items: "{{ letsencrypt_certs_to_obtain | default([]) }}"
+  register: _letsencrypt_acme_step_one
+  when:
+    - letsencrypt_acme_step == 'one'
+    - not ansible_check_mode
+  tags: letsencrypt
+
+- set_fact:
+    letsencrypt_acme_step_one: "{{ _letsencrypt_acme_step_one.results }}"
+  when: letsencrypt_acme_step == 'one'
+  tags: letsencrypt
+
+- name: ACME step two
+  letsencrypt:
+    account_key: "{{ letsencrypt_certs_dir }}/{{ letsencrypt_account_key_name }}.key"
+    acme_directory: "{{ item.1.acme_directory | default(omit) }}"
+    challenge: "{{ item.1.challenge }}"
+    csr: "{{ item.1.csr }}"
+    dest: "{{ item.1.dest }}"
+    data: "{{ item.0 }}"
+  with_together:
+    - "{{ letsencrypt_acme_step_one }}"
+    - "{{ letsencrypt_certs_to_obtain | default([]) }}"
+  register: _letsencrypt_acme_step_two
+  when:
+    - item.1.domain == item.0.item.domain
+    - letsencrypt_acme_step == 'two'
+    - not ansible_check_mode
+  tags: letsencrypt
