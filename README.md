@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/danvaida/ansible-roles-letsencrypt.svg?branch=master)](https://travis-ci.org/danvaida/ansible-roles-letsencrypt)
+
 # Ansible Let's Encrypt role
 
 Obtains TLS certificates through [ACME][1] from [Let's Encrypt][2].
@@ -136,6 +138,8 @@ following commands:
     $ docker run --rm -it \
       -v $PWD:/etc/ansible/roles/letsencrypt \
       -v $PWD/tests/dependencies:/etc/ansible/roles/letsencrypt/tests/roles:ro \
+      --env AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
+      --env AWS_SECRET_KEY=$AWS_SECRET_KEY \
       --workdir /etc/ansible/roles/letsencrypt/tests \
       ansible-roles-test
 
@@ -146,11 +150,10 @@ following commands:
 * Integration with some web servers roles (i.e. NGINX, Apache)
 * Support renewal
 * Support multiple Ansible versions and Distros.
-* Register/transfer a domain in Route53 for testing purposes.
 
 # License
 
-MIT / BSD
+BSD
 
 # Author Information
 
