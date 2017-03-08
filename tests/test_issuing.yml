@@ -1,5 +1,5 @@
 ---
-- name: Testing the idempotence of the issuing process
+- name: ACME Step 1
   hosts: localhost
   vars_files: [ './vars/issuing.yml' ]
   pre_tasks:
@@ -10,3 +10,51 @@
 
   roles:
     - letsencrypt
+
+  tasks:
+    - name: List of Route53 records to create should be set as fact
+      set_fact:
+        route53_records_to_add: "{{
+          route53_records_to_add | default([]) +
+          [{'zone': item.1.domain,
+          'record': item.0.challenge_data[item.1.domain]['dns-01']['resource'] + '.' + item.1.domain + '.',
+          'ttl': 300,
+          'type': 'TXT',
+          'value': '\"' + item.0.challenge_data[item.1.domain]['dns-01']['resource_value'] + '\"' }]
+          }}"
+      with_together:
+        - "{{ letsencrypt_acme_step_one }}"
+        - "{{ letsencrypt_certs_to_obtain | default([]) }}"
+      when:
+        - item.1.domain == item.0.item.domain
+        - not ansible_check_mode
+      tags: route53
+
+- name: ACME challenge solving (DNS record in Route53)
+  hosts: localhost
+  roles:
+    - route53
+
+- name: ACME Step 2
+  hosts: localhost
+  pre_tasks:
+    - name: We should wait for the DNS changes to propagate
+      pause: minutes=1
+
+  roles:
+    - role: letsencrypt
+      letsencrypt_acme_step: two
+      tags: letsencrypt
+
+  tasks:
+    - block:
+        - name: Existence check of the Certificate file should be made
+          stat:
+            path: "{{ letsencrypt_certs_dir }}/arch-admin.com/domain.crt"
+          register: cert_file
+
+        - name: The Certificate should've been issued and saved locally
+          assert:
+            that: cert_file.stat.exists
+
+      when: not ansible_check_mode
