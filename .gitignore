@@ -1,0 +1,4 @@
+*.retry
+*.swp
+tests/dependencies
+tests/roles

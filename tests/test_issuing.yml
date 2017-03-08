@@ -1,0 +1,12 @@
+---
+- name: Testing the idempotence of the issuing process
+  hosts: localhost
+  vars_files: [ './vars/issuing.yml' ]
+  pre_tasks:
+    - debug:
+        msg: >
+          Running the playbook in dry-run mode.
+      when: ansible_check_mode
+
+  roles:
+    - letsencrypt
