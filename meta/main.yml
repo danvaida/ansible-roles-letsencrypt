@@ -1,0 +1,33 @@
+---
+galaxy_info:
+  author: Dan Vaida
+  description: Obtains TLS certificates through ACME from Let's Encrypt.
+  company: S.C. Arch Admin S.R.L.
+  license: BSD
+  min_ansible_version: 2.2
+  platforms:
+    - name: GenericUnix
+      versions:
+        - all
+        - any
+    - name: GenericLinux
+      versions:
+        - all
+        - any
+    - name: GenericBSD
+      versions:
+        - all
+        - any
+
+  galaxy_tags:
+    - acme
+    - certificates
+    - encryption
+    - https
+    - letsencrypt
+    - networking
+    - security
+    - ssl
+    - tls
+
+dependencies: []

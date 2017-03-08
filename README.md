@@ -1,6 +1,6 @@
 # Ansible Let's Encrypt role
 
-Handles the interaction with the [ACME][1] Server of [Let's Encrypt][2].
+Obtains TLS certificates through [ACME][1] from [Let's Encrypt][2].
 
 Once you complete the challenge(s) and obtain the Certificate(s), you are responsible for setting it/them up in your web server(s) of choice.
 
