@@ -2,7 +2,7 @@
 
 Handles the interaction with the [ACME][1] Server of [Let's Encrypt][2].
 
-Once you complete the challenge and obtain the Certificate, you are responsible for setting it up in your web server of choice.
+Once you complete the challenge(s) and obtain the Certificate(s), you are responsible for setting it/them up in your web server(s) of choice.
 
 # Requirements
 
@@ -12,7 +12,7 @@ Once you complete the challenge and obtain the Certificate, you are responsible 
 # Role Variables
 
 * __letsencrypt_certs_dir:__
-  Path to work-dir where all CSRs, Keys and Certs will be stored.
+  Path to work-dir, where all CSRs, Keys and Certs will be stored.
 
 * __letsencrypt_account_key_name:__
   Name of the Let's Encrypt account's RSA key.
@@ -30,7 +30,7 @@ Once you complete the challenge and obtain the Certificate, you are responsible 
     Path to the RSA key file.
 
   * __acme_directory:__
-    Let's Encrypt ACME API endpoint. Uses their Staging by default.
+    ACME API endpoint. Uses Let's Encrypt's Staging by default.
 
   * __agreement:__
     URI to TOS doc you agree with.
@@ -42,7 +42,7 @@ Once you complete the challenge and obtain the Certificate, you are responsible 
     Path to the CSR file.
 
   * __dest:__
-    Path to the resulting Certificate file.
+    Path to the resulting Certificate file (where you want to store it).
 
   * __remaining_days:__
     Number of days for the cert to be valid.
@@ -59,10 +59,11 @@ ACME server.
 
 We have three plays:
 
-* create CSR, Key and issue request for certificate release
-* complete the challenge (DNS record in Route53 in this case)
-* ask to validate the challenge and grant the certificate
+1. create CSR, Key and issue request for certificate release
+2. complete the challenge (DNS record in Route53 in this case)
+3. ask to validate the challenge and grant the certificate.
 
+```
     - name: ACME Step 1
       hosts: localhost
       connection: local
@@ -117,6 +118,7 @@ We have three plays:
         - role: letsencrypt
           letsencrypt_acme_step: two
           tags: letsencrypt
+```
 
 Completing other challenge types should be all the same and opaque to this role.
 
@@ -142,7 +144,7 @@ following commands:
 * Support other challenge types
 * Support other DNS services APIs (i.e. [Cloud DNS][4])
 * Integration with some web servers roles (i.e. NGINX, Apache)
-* Support renewal.
+* Support renewal
 * Support multiple Ansible versions and Distros.
 * Register/transfer a domain in Route53 for testing purposes.
 
@@ -152,7 +154,7 @@ MIT / BSD
 
 # Author Information
 
-Role created by [Dan Vaida][danvaida.com].
+Role created by [Dan Vaida](https://github.com/danvaida).
 
 # Contributions
 
