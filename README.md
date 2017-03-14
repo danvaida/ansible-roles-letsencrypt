@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/danvaida/ansible-roles-letsencrypt.svg?branch=master)](https://travis-ci.org/danvaida/ansible-roles-letsencrypt)
+[![Galaxy](https://img.shields.io/ansible/role/16126.svg)](https://galaxy.ansible.com/danvaida/letsencrypt/)
 
 # Ansible Let's Encrypt role
 
