@@ -17,10 +17,12 @@
         route53_records_to_add: "{{
           route53_records_to_add | default([]) +
           [{'zone': item.1.domain,
+          'records': [{
           'record': item.0.challenge_data[item.1.domain]['dns-01']['resource'] + '.' + item.1.domain + '.',
           'ttl': 300,
           'type': 'TXT',
           'value': '\"' + item.0.challenge_data[item.1.domain]['dns-01']['resource_value'] + '\"' }]
+          }]
           }}"
       with_together:
         - "{{ letsencrypt_acme_step_one }}"
