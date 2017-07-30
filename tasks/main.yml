@@ -94,7 +94,7 @@
     dest: "{{ item.1.dest }}"
     data: "{{ item.0 }}"
   with_together:
-    - "{{ letsencrypt_acme_step_one }}"
+    - "{{ letsencrypt_acme_step_one | default([]) }}"
     - "{{ letsencrypt_certs_to_obtain | default([]) }}"
   register: _letsencrypt_acme_step_two
   when:

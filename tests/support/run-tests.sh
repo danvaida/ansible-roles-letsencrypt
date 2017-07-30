@@ -12,7 +12,7 @@ ansible-playbook test_defaults.yml
 
 ansible-playbook test_defaults.yml > /tmp/second_run.log
 {
-    tail -n 5 /tmp/second_run.log | grep 'changed=0' &&
+    grep -q 'changed=0.*failed=0' /tmp/second_run.log &&
     echo 'Playbook is idempotent'
 } || {
     cat /tmp/second_run.log
@@ -32,7 +32,7 @@ ansible-playbook test_issuing.yml
 
 ansible-playbook test_issuing.yml > /tmp/second_run.log
 {
-    tail -n 5 /tmp/second_run.log | grep 'changed=0' &&
+    grep -q 'changed=0.*failed=0' /tmp/second_run.log &&
     echo 'Playbook is idempotent'
 } || {
     cat /tmp/second_run.log
