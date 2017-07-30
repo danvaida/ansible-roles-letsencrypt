@@ -134,15 +134,25 @@ If you want to run the tests on the provided docker environment, run the
 following commands:
 
     $ cd /path/to/ansible-roles/letsencrypt
-    $ ansible-galaxy install --force -r ./tests/requirements.yml -p ./tests/dependencies
-    $ docker build --no-cache -t ansible-roles-test tests/support
-    $ docker run --rm -it \
-      -v $PWD:/etc/ansible/roles/letsencrypt \
-      -v $PWD/tests/dependencies:/etc/ansible/roles/letsencrypt/tests/roles:ro \
-      --env AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
-      --env AWS_SECRET_KEY=$AWS_SECRET_KEY \
-      --workdir /etc/ansible/roles/letsencrypt/tests \
-      ansible-roles-test
+    $ ansible-galaxy install \
+        --force \
+        --role-file=./tests/requirements.yml \
+        --roles-path=./tests/dependencies
+    $ docker build \
+        --no-cache \
+        --pull \
+        --tag ansible-roles-test \
+        tests/support
+    $ docker run \
+        --rm \
+        --interactive \
+        --tty \
+        --volume $PWD:/etc/ansible/roles/letsencrypt \
+        --volume $PWD/tests/dependencies:/etc/ansible/roles/letsencrypt/tests/roles:ro \
+        --env AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
+        --env AWS_SECRET_KEY=$AWS_SECRET_KEY \
+        --workdir /etc/ansible/roles/letsencrypt/tests \
+        ansible-roles-test
 
 # To-do
 
@@ -154,7 +164,7 @@ following commands:
 
 # License
 
-BSD
+This project is licensed under the terms of the GNU GPL v3.0 license.
 
 # Author Information
 
@@ -162,7 +172,6 @@ Role created by [Dan Vaida](https://github.com/danvaida).
 
 # Contributions
 
-This role is brand-new and obviously, there are plenty of improvements that can be made.
 See the [ToDo](#to-do) list. Contributions are welcome.
 
 [1]: https://ietf-wg-acme.github.io/acme/

@@ -8,25 +8,33 @@ sudo: required
 services:
   - docker
 
-env:
-  - distro: wheezy
-
 install:
   - sudo pip install ansible==2.2
-  - ansible-galaxy install --force -r ./tests/requirements.yml -p ./tests/dependencies
+  - >
+    ansible-galaxy install
+    --role-file=./tests/requirements.yml
+    --roles-path=./tests/dependencies
+    --force
 
 before_script:
-  - docker build --no-cache -t ansible-roles-test-${distro} tests/support
+  - >
+    docker build
+    --no-cache
+    --pull
+    --tag ansible-roles-test
+    tests/support
 
 script:
   - >
-    docker run -it
-    -v $PWD:/etc/ansible/roles/letsencrypt
-    -v $PWD/tests/dependencies:/etc/ansible/roles/letsencrypt/tests/roles:ro
+    docker run
+    --interactive
+    --tty
+    --volume $PWD:/etc/ansible/roles/letsencrypt
+    --volume $PWD/tests/dependencies:/etc/ansible/roles/letsencrypt/tests/roles:ro
     --env AWS_ACCESS_KEY=$AWS_ACCESS_KEY
     --env AWS_SECRET_KEY=$AWS_SECRET_KEY
     --workdir /etc/ansible/roles/letsencrypt/tests
-    ansible-roles-test-${distro}
+    ansible-roles-test
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
