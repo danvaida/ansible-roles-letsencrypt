@@ -1,10 +1,8 @@
 ---
 - name: Testing the idempotence with the default vars
-  hosts: localhost
+  hosts: host2
   pre_tasks:
-    - debug:
-        msg: >
-          Running the playbook in dry-run mode.
+    - debug: msg='Running the playbook in dry-run mode.'
       when: ansible_check_mode
 
   roles:

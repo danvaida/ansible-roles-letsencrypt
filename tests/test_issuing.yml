@@ -1,15 +1,13 @@
 ---
 - name: ACME Step 1
-  hosts: localhost
-  vars_files: [ './vars/issuing.yml' ]
+  hosts: local
   pre_tasks:
-    - debug:
-        msg: >
-          Running the playbook in dry-run mode.
+    - debug: msg='Running the playbook in dry-run mode.'
       when: ansible_check_mode
 
   roles:
-    - letsencrypt
+    - role: letsencrypt
+      when: inventory_hostname != 'host2'
 
   tasks:
     - name: List of Route53 records to create should be set as fact
@@ -25,7 +23,7 @@
           }]
           }}"
       with_together:
-        - "{{ letsencrypt_acme_step_one }}"
+        - "{{ letsencrypt_acme_step_one | default([]) }}"
         - "{{ letsencrypt_certs_to_obtain | default([]) }}"
       when:
         - item.1.domain == item.0.item.domain
@@ -33,12 +31,12 @@
       tags: route53
 
 - name: ACME challenge solving (DNS record in Route53)
-  hosts: localhost
+  hosts: local
   roles:
     - route53
 
 - name: ACME Step 2
-  hosts: localhost
+  hosts: local
   pre_tasks:
     - name: We should wait for the DNS changes to propagate
       pause: minutes=1
