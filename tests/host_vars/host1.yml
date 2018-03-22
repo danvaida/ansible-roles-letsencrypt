@@ -5,5 +5,6 @@ letsencrypt_certs_to_generate:
     account_email: 'me@danvaida.com'
     account_key: "{{ letsencrypt_certs_dir }}/{{ letsencrypt_account_key_name }}.key"
     challenge: 'dns-01'
+    agreement: 'https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf'
     csr: "{{ letsencrypt_certs_dir }}/arch-admin.com/your.csr"
     dest: "{{ letsencrypt_certs_dir }}/arch-admin.com/domain.crt"

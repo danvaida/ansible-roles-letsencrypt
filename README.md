@@ -81,6 +81,7 @@ We have three plays:
               account_email: 'info@your-domain.com'
               account_key: "{{ letsencrypt_certs_dir }}/{{ letsencrypt_account_key_name }}.key"
               challenge: 'dns-01'
+              agreement: 'https://letsencrypt.org/documents/LE-SA-v1.2-November-15-2017.pdf'
               csr: "{{ letsencrypt_certs_dir }}/your-domain.com/your.csr"
               dest: "{{ letsencrypt_certs_dir }}/your-domain.com/domain.crt"
               acme_directory: 'https://acme-v01.api.letsencrypt.org/directory'
@@ -160,7 +161,9 @@ following commands:
 * Support other DNS services APIs (i.e. [Cloud DNS][4])
 * Integration with some web servers roles (i.e. NGINX, Apache)
 * Support renewal
-* Support multiple Ansible versions and Distros.
+* Support multiple Ansible versions and Distros
+* Update Ansible in the tests Docker image to be able to not specify the
+[agreement for the DNS challenge][5].
 
 # License
 
@@ -178,3 +181,4 @@ See the [ToDo](#to-do) list. Contributions are welcome.
 [2]: https://letsencrypt.org
 [3]: https://aws.amazon.com/route53/
 [4]: https://cloud.google.com/dns/
+[5]: https://github.com/ansible/ansible/pull/33046
